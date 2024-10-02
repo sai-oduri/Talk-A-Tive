@@ -8,8 +8,8 @@ dotenv.config();
 
 const app = express();
 
-app.get("/", (req, res) => {
-
+app.get("/chat", (req, res) => {
+    res.send(chats);
 })
 
 const PORT = process.env.PORT || 3001;
