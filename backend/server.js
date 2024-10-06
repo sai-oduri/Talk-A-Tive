@@ -2,7 +2,8 @@ const express = require("express");
 
 const dotenv = require("dotenv");
 
-const userRoutes = require("./routes/userRoutes");
+const userRoutes = require("./routes/userRoutes.js");
+const chatRoutes = require("./routes/chatRoutes.js")
 
 const { chats } = require("./data/data.js")
 
@@ -23,6 +24,7 @@ app.get("/", (req, res) => {
 })
 
 app.use('/api/user', userRoutes);
+app.use('/api/chat', chatRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
