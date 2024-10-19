@@ -182,6 +182,11 @@ const SideDrawer = () => {
                             mr={2}
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
+                            onKeyUp={(e) => {
+                                if (e.key === 'Enter') {
+                                    handleSearch();
+                                }
+                            }}
                         />
                         <Button onClick={handleSearch}>Go</Button>
                     </Box>

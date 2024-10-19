@@ -12,7 +12,7 @@ import ScrollableChat from "./ScrollableChat";
 import io from "socket.io-client";
 
 const ENDPOINT = "http://localhost:3000";
-var socket, selectedChatCompare;
+var socket, selectedChatCompare, timeoutHandle;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
@@ -79,10 +79,18 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         socket.on("message received", (newMessageReceived) => {
             if (!selectedChatCompare || selectedChatCompare._id != newMessageReceived.chat._id) {
                 // give notification
-                if (!notification.includes(newMessageReceived)) {
+
+                let check = false;
+
+                notification.forEach(notif => {
+                    if (notif.chat._id === newMessageReceived.chat._id) check = true;
+                })
+
+                if (!check) {
                     setNotification([newMessageReceived, ...notification]);
                     setFetchAgain(!fetchAgain);
                 }
+
             } else {
                 setMessages([...messages, newMessageReceived]);
             }
@@ -123,6 +131,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         }
     }
 
+
+
     const typingHandler = (e) => {
         setNewMessage(e.target.value);
 
@@ -134,17 +144,15 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             socket.emit("typing", selectedChat._id);
         }
 
-        let lastTypingTime = new Date().getTime();
-        var timerLength = 3000;
-        setTimeout(() => {
-            var timeNow = new Date().getTime();
-            var timeDiff = timeNow - lastTypingTime;
+        if (timeoutHandle) {
+            clearTimeout(timeoutHandle);
+            timeoutHandle = null;
+        }
 
-            if (timeDiff >= timerLength && typing) {
-                socket.emit("stop typing", selectedChat._id);
-                setTyping(false);
-            }
-        }, timerLength)
+        timeoutHandle = setTimeout(() => {
+            socket.emit("stop typing", selectedChat._id);
+            setTyping(false);
+        }, 2000);
 
     }
 
